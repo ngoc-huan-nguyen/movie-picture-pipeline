@@ -135,7 +135,14 @@ jobs:
       run: |
         aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME
       
+    - name: Check folder
+      run: ls
+      
     - name: Deploy application to EKS
       run: |
         cd backend/k8s
         kubectl apply -f kustomization.yaml
+    - name: Check deploy
+      run: |
+        kubectl get deployment
+        kubectl get pods
