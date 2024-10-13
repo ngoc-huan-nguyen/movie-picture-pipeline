@@ -24,14 +24,21 @@ jobs:
 
     - name: Go to source folder
       run: cd backend
+
     - name: Install pipenv
-      run: pip install pipenv
+      run: |
+        ls
+        pip install pipenv
 
     - name: Install dependencies
-      run: pipenv install --dev
+      run: |
+        ls
+        pipenv install --dev
 
     - name: Run Lint
-      run: pipenv run flake8 .
+      run: |
+        ls
+        pipenv run flake8 .
   
   test-job:
     runs-on: ubuntu-latest
