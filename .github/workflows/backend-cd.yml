@@ -1,0 +1,96 @@
+name: Backend cd workflow
+
+on:
+  workflow_dispatch:
+  merge:
+    branches:
+      - main
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  install-build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Use Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install pipenv
+      run: |
+        cd frontend
+        pip install pipenv
+
+    - name: Install dependencies
+      run: |
+        cd frontend
+        pipenv install --dev
+
+    - name: Run Lint
+      run: |
+        cd frontend
+        pipenv run flake8 .
+    
+    - name: Run Test
+      run: |
+        cd frontend
+        pipenv run pytest
+
+    - name: Run Build
+      run: |
+        cd frontend
+        pipenv run python -m build
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    needs: install-build-test
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          REPOSITORY: ${{ secrets.BE_IMAGE_REPO_NAME }}
+          REGION: ${{ secrets.REGION }}
+          IMAGE_TAG: latest
+        run: |
+          cd backend
+          docker build -t $REPOSITORY:$IMAGE_TAG .
+          docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [install-build-test, build-and-push-image]
+
+    steps:
+      - name: Use kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Config for EKS cluster
+        env:
+          REGION: ${{ secrets.REGION }}
+          CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+        run: |
+          aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME
+      
+      - name: Deploy application to EKS
+        run: |
+          cd backend/k8s
+          kubectl apply -f kustomization.yaml
