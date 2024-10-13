@@ -7,7 +7,7 @@ on:
       
   workflow_dispatch:
 env:
-  PYTHON_VERSION: '3.12'
+  PYTHON_VERSION: '3.10'
 
 jobs:
   lint-job:
@@ -22,20 +22,16 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
+    - name: Go to source folder
+      run: cd backend
     - name: Install pipenv
-      run: |
-        cd backend
-        pip install pipenv
+      run: pip install pipenv
 
     - name: Install dependencies
-      run: |
-        cd backend
-        pipenv install --dev
+      run: pipenv install --dev
 
     - name: Run Lint
-      run: |
-        cd backend
-        pipenv run flake8 .
+      run: pipenv run flake8 .
   
   test-job:
     runs-on: ubuntu-latest
@@ -50,19 +46,13 @@ jobs:
         python-version: ${{ env.PYTHON_VERSION }}
 
     - name: Install pipenv
-      run: |
-        cd backend
-        pip install pipenv
+      run: pip install pipenv
 
     - name: Install dependencies
-      run: |
-        cd backend
-        pipenv install --dev
+      run: pipenv install --dev
 
     - name: Run Test
-      run: |
-        cd backend
-        pipenv run pytest
+      run: pipenv run pytest
 
   build-job:
     needs: [lint-job, test-job]
@@ -78,16 +68,10 @@ jobs:
         python-version: ${{ env.PYTHON_VERSION }}
 
     - name: Install pipenv
-      run: |
-        cd backend
-        pip install pipenv
+      run: pip install pipenv
 
     - name: Install dependencies
-      run: |
-        cd backend
-        pipenv install --dev
+      run: pipenv install --dev
 
     - name: Run Build
-      run: |
-        cd backend
-        pipenv run python -m build
+      run: pipenv run python -m build
