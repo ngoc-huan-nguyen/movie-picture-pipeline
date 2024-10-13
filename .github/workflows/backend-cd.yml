@@ -63,16 +63,14 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Login to Amazon ECR
+      id: ecr
       uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Build image
-      env:
-        REPOSITORY: movie-picture-be
+    - name: Build and run
       run: |
         ls
         cd backend
-        ls
-        docker build -t $REPOSITORY .
+        docker build --tag movie-picture-be:latest .
 
     - name: Tag image
       env:
