@@ -55,6 +55,32 @@ jobs:
     needs: install-build-test
 
     steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Use Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install pipenv
+      run: |
+        cd backend
+        pip install pipenv
+
+    - name: Install dependencies
+      run: |
+        cd backend
+        pipenv install --dev
+
+    - name: Build
+      env:
+        REPOSITORY: movie-picture-be
+        IMAGE_TAG: latest
+      run: |
+        cd backend
+        docker build --tag $REPOSITORY:$IMAGE_TAG .
+        
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
