@@ -22,22 +22,19 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Go to source folder
-      run: cd backend
-
     - name: Install pipenv
       run: |
-        ls
+        cd frontend
         pip install pipenv
 
     - name: Install dependencies
       run: |
-        ls
+        cd frontend
         pipenv install --dev
 
     - name: Run Lint
       run: |
-        ls
+        cd frontend
         pipenv run flake8 .
   
   test-job:
