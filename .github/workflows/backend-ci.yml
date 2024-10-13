@@ -97,4 +97,4 @@ jobs:
     - name: Run Build
       run: |
         cd backend
-        python -m build
+        pipenv run python -m build
