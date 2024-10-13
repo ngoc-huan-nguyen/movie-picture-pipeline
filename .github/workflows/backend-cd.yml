@@ -101,7 +101,7 @@ jobs:
         REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
         REPOSITORY: movie-picture-be
         IMAGE_TAG: latest
-      run: docker build tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+      run: docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG .
 
     - name: Push docker image to Amazon ECR
       env:
