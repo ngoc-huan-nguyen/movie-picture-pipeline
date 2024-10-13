@@ -24,23 +24,17 @@ jobs:
 
     - name: Install pipenv
       run: |
-        ls
         cd backend
-        ls
         pip install pipenv
 
     - name: Install dependencies
       run: |
-        ls
         cd backend
-        ls
         pipenv install --dev
 
     - name: Run Lint
       run: |
-        ls
         cd backend
-        ls
         pipenv run flake8 .
   
   test-job:
@@ -93,9 +87,8 @@ jobs:
         cd backend
         pipenv install --dev
 
-    - name: Run Build
+    - name: Run build and run
       run: |
-        ls
         cd backend
-        ls
-        pipenv run python -m build
+        docker build --tag movie-picture-be:latest .
+        docker run -p 5000:5000 --name movie-picture-be -d movie-picture-be
