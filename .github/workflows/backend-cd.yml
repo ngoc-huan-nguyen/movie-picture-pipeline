@@ -115,6 +115,9 @@ jobs:
     # needs: [install-build-test, build-and-push-image]
 
     steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+      
     - name: Use kubectl
       uses: azure/setup-kubectl@v3
       with:
