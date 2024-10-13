@@ -66,8 +66,8 @@ jobs:
       - name: Build, tag, and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-          REPOSITORY: ${{ secrets.BE_IMAGE_REPO_NAME }}
-          REGION: ${{ secrets.REGION }}
+          REPOSITORY: movie-picture-be
+          REGION: ${{ secrets.AWS_REGION }}
           IMAGE_TAG: latest
         run: |
           cd backend
@@ -87,8 +87,8 @@ jobs:
 
       - name: Config for EKS cluster
         env:
-          REGION: ${{ secrets.REGION }}
-          CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+          REGION: ${{ secrets.AWS_REGION }}
+          CLUSTER_NAME: my-cluster
         run: |
           aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME
       
