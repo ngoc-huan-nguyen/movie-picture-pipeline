@@ -84,7 +84,7 @@ jobs:
           REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
           REPOSITORY: movie-picture-be
           IMAGE_TAG: latest
-        run: ocker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        run: docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
   deploy:
     runs-on: ubuntu-latest
