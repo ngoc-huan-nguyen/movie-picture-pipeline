@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: backend
-          image: huannguyenngoc/movie-picture-be:latest
+          image: huannguyenngoc/movie-picture-be:1
           ports:
             - containerPort: 5000
