@@ -8,6 +8,8 @@ flask = "*"
 uwsgi = "*"
 flask-cors = "*"
 pytest = "*"
+setuptools="*"
+wheel="*"
 
 [dev-packages]
 black = "*"
