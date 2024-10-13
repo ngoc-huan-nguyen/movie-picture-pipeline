@@ -1,0 +1,13 @@
+[project]
+name = "backend"
+version = "0.0.1"
+authors = [
+  { name="HuanNN4", email="HuanNN4@example.com" },
+]
+description = "Backend movie picture pipeline"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]

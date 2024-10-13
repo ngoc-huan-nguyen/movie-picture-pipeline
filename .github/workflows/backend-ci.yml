@@ -92,7 +92,6 @@ jobs:
       run: |
         cd backend
         pipenv install --dev
-        pipenv install setuptools wheel --dev
 
     - name: Run Build
       run: |
