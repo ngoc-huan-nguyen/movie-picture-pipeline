@@ -1,10 +1,11 @@
 name: Backend ci workflow
 
 on:
-  workflow_dispatch:
   pull_request:
     branches:
       - main
+      
+  workflow_dispatch:
 env:
   PYTHON_VERSION: '3.12'
 

@@ -1,10 +1,10 @@
 name: Frontend cd workflow
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
+  workflow_dispatch:
 env:
   NODE_VERSION: '18.x'
 
