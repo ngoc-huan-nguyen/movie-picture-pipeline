@@ -57,23 +57,17 @@ jobs:
 
     - name: Install pipenv
       run: |
-        ls
         cd backend
-        ls
         pip install pipenv
 
     - name: Install dependencies
       run: |
-        ls
         cd backend
-        ls
         pipenv install --dev
 
     - name: Run Test
       run: |
-        ls
         cd backend
-        ls
         pipenv run pytest
 
   build-job:
@@ -91,21 +85,15 @@ jobs:
 
     - name: Install pipenv
       run: |
-        ls
         cd backend
-        ls
         pip install pipenv
 
     - name: Install dependencies
       run: |
-        ls
         cd backend
-        ls
         pipenv install --dev
 
     - name: Run Build
       run: |
-        ls
         cd backend
-        ls
-        pipenv run python -m build
+        python -m build
