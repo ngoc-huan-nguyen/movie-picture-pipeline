@@ -87,7 +87,7 @@ jobs:
         cd backend
         pipenv install --dev
 
-    - name: Run build and run
+    - name: Build and run
       run: |
         cd backend
         docker build --tag movie-picture-be:latest .
