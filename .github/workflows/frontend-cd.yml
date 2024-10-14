@@ -9,7 +9,7 @@ env:
   NODE_VERSION: '18.x'
 
 jobs:
-  install-build-test:
+  lint-job:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,16 +21,25 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
-    - name: Install, Build, Test
+    - name: Cache node modules
+      uses: actions/cache@v4
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+    - name: Install dependencies
       run: |
         cd frontend
         npm ci
-        npm run build --if-present
-        npm test
 
-  build-and-push-image:
+    - name: Run Lint
+      run: |
+        cd frontend
+        npm run lint
+  test-job:
     runs-on: ubuntu-latest
-    needs: install-build-test
 
     steps:
     - name: Check out repository
@@ -40,6 +49,44 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ env.NODE_VERSION }}
+
+    - name: Cache node modules
+      uses: actions/cache@v4
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Run Test
+      run: |
+        cd frontend
+        npm run test
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [lint-job, test-job]
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Cache node modules
+      uses: actions/cache@v4
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
     - name: Install, Build, Test
       run: |
@@ -52,9 +99,13 @@ jobs:
       env:
         REPOSITORY: movie-picture-fe
         IMAGE_TAG: latest
+        REACT_APP_MOVIE_API_URL: ${{ secrets.REACT_APP_MOVIE_API_URL }}
       run: |
         cd frontend
-        docker build -t $REPOSITORY .
+        docker build \
+            --build-arg=REACT_APP_MOVIE_API_URL="http://$REACT_APP_MOVIE_API_URL/" \
+            -t $REPOSITORY:IMAGE_TAG \
+            .
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -84,44 +135,24 @@ jobs:
         IMAGE_TAG: latest
       run: docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [install-build-test, build-and-push-image]
-
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
-
-    - name: Use kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'latest'
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-        aws-region: ${{ secrets.AWS_REGION }}
-
     - name: Config for EKS cluster
       env:
         REGION: ${{ secrets.AWS_REGION }}
         CLUSTER_NAME: my-cluster
       run: |
         aws eks update-kubeconfig --region $REGION --name $CLUSTER_NAME
-      
-    - name: Check folder
-      run: ls
-      
-    - name: Deploy application to EKS
+
+    - name: Update image
+      env:
+        REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        REPOSITORY: movie-picture-fe
+        IMAGE_TAG: latest
+      run: |
+        cd frontend/k8s
+        kustomize edit set image $REPOSITORY=$REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+    - name: Deploy application to EKS cluster
       run: |
         cd frontend/k8s
         ls
-        kubectl apply -f deployment.yaml
-        kubectl apply -f service.yaml
-    - name: Check deploy
-      run: |
-        kubectl get deployment
-        kubectl get pods
+        kustomize build | kubectl apply -f -

@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: backend
-          image: 859033265802.dkr.ecr.us-east-1.amazonaws.com/movie-picture-be:latest
+          image: movie-picture-be
           ports:
             - containerPort: 5000

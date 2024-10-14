@@ -29,8 +29,6 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      run: |
-        ls
 
     - name: Install dependencies
       run: |
@@ -53,6 +51,14 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ env.NODE_VERSION }}
+
+    - name: Cache node modules
+      uses: actions/cache@v4
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
     - name: Install dependencies
       run: |
@@ -77,6 +83,14 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
+    - name: Cache node modules
+      uses: actions/cache@v4
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
     - name: Install dependencies
       run: |
         cd frontend
@@ -86,5 +100,5 @@ jobs:
       run: |
         cd frontend
         export REACT_APP_MOVIE_API_URL=http://localhost:5000
-        docker build --build-arg=REACT_APP_MOVIE_API_URL --tag=mp-frontend:latest .
-        docker run --name mp-frontend -p 3000:3000 -d mp-frontend
+        docker build --build-arg=REACT_APP_MOVIE_API_URL --tag movie-picture-fe:latest .
+        docker run -p 3000:3000 --name movie-picture-fe -d movie-picture-fe
