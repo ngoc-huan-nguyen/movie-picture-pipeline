@@ -24,10 +24,10 @@ jobs:
 
     - name: Cache node modules
       uses: actions/cache@v4
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
             ${{ runner.os }}-node-
 
     - name: Install dependencies
@@ -54,10 +54,10 @@ jobs:
 
     - name: Cache node modules
       uses: actions/cache@v4
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
             ${{ runner.os }}-node-
 
     - name: Install dependencies
@@ -85,10 +85,10 @@ jobs:
 
     - name: Cache node modules
       uses: actions/cache@v4
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
             ${{ runner.os }}-node-
 
     - name: Install dependencies
