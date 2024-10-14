@@ -102,10 +102,9 @@ jobs:
         REACT_APP_MOVIE_API_URL: ${{ secrets.REACT_APP_MOVIE_API_URL }}
       run: |
         cd frontend
-        docker build \
-            --build-arg=REACT_APP_MOVIE_API_URL="http://$REACT_APP_MOVIE_API_URL/" \
-            -t $REPOSITORY:IMAGE_TAG \
-            .
+        ls
+        REACT_APP_MOVIE_API_URL="http://$REACT_APP_MOVIE_API_URL"
+        docker build --build-arg=REACT_APP_MOVIE_API_URL -t $REPOSITORY:IMAGE_TAG .
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
